@@ -1,0 +1,40 @@
+<div class="datagrid cp-datagrid">
+    <table class="bordered">
+        <tr>
+            <th ng-repeat="column in config.columns" class="datagrid-header-column">
+                <span ng-click="order.setOrderingColumn(column.identificator)"> {{column.label}}</span>
+                <span ng-show="column.identificator == order.column">
+                    <span ng-show="order.reversed">&#9650;</span>
+                    <span ng-hide="order.reversed">&#9660;</span>
+                </span>
+                <img src="app/group-icon.png" alt="G" ng-click="grouping.addGroup(column.identificator)"/>
+            </th>
+        </tr>
+        <tr ng-show="grouping.showToolbar()">
+            <td colspan="{{config.columns.length}}">
+                <span ng-repeat="group in grouping.groups">
+                    {{config.columns[group].label}}
+                    <span ng-click="grouping.removeGroup(group)" style="font-weight: bold;">(x)</span>
+                    {{$last ? '' : ' -> '}}
+                </span>
+            </td>
+        </tr>
+        <tr ng-repeat="row in rows | orderBy:order.column:order.reversed | startFrom:currentPage*config.itemsPerPage | limitTo:config.itemsPerPage | deGroup">
+            <td ng-repeat="column in config.columns" class="datagrid-data-column">
+                <span ng-if="$first && row._nested.length > 0">
+                    <span ng-show="row._isOpen" ng-click="row._isOpen = !row._isOpen">&#9660;</span>
+                    <span ng-hide="row._isOpen" ng-click="row._isOpen = !row._isOpen">&#9658;</span>
+                </span>
+                {{row[column.identificator]}}
+            </td>
+        </tr>
+    </table>
+    <button ng-disabled="currentPage == 0" ng-click="currentPage=currentPage-1">
+        Předchozí
+    </button>
+    {{currentPage+1}}/{{numberOfPages()}}
+    <button ng-disabled="currentPage >= rows.length/config.itemsPerPage - 1" ng-click="currentPage=currentPage+1">
+        Další
+    </button>
+</div>
+
